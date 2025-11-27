@@ -1,2 +1,2 @@
 # T-Intersection-Traffic-Controller
-Design and simulation of a traffic light controller for a T-intersection using Verilog.
+Design and simulation of a traffic light controller for a T-intersection using Verilog. The model aims to optimize traffic flow and enhance pedestrian safety through efficient signal management by coordinating vehicular and pedestrian traffic at the intersection.The primary objective of this report is to design and simulate a traffic controller for a T-intersection that has four distinct modes, each with a different time interval. The intersection joins three roads (A, B, C) as well as a pedestrian area.
