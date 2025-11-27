@@ -53,4 +53,4 @@ Time=62 | Mode=2 | Button(I)=1 | Lights: A1=1 A2=1 B=0 C=0  (10s, button pressed
 Time=82 | Mode=0 | Button(I)=0 | Lights: A1=0 A2=0 B=0 C=0  (30s, Pedestrian Mode)
 Time=142| Mode=1 | Button(I)=0 | Lights: A1=1 A2=0 B=0 C=1  (Resumes normal cycle)
 ```
-*Project completed by Albert Saman and Hussam Dawood for Digital Logic Lab, Spring 2024.*
+*Project completed by Albert Saman (me) and Hussam Dawood (my lab partner) for Digital Logic Lab, Spring 2024.*
