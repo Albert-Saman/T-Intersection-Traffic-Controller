@@ -1,0 +1,126 @@
+module jk_ff(j, k, clk, clr, q);
+input j, k, clr, clk;
+output reg q;
+
+initial begin
+    q <= 1'b0; //initialize the flip flop to 0
+end
+
+always @(posedge clk or posedge clr) begin
+    if (clr) begin //active high
+        q <= 1'b0;
+    end else begin
+        case ({j,k})
+            2'b00: q <= q;    //no change
+            2'b01: q <= 1'b0; //reset
+            2'b10: q <= 1'b1; //set
+            2'b11: q <= ~q;   //toggle
+        endcase
+    end
+end
+endmodule
+
+module counter(out, clr, clk);
+input clk, clr;
+output [4:0] out;
+wire w1, w2, w3;
+
+and x1(w1, out[1], out[0]);
+and x2(w2, out[2], w1);
+and x3(w3, out[3], w2);
+
+jk_ff jkf1(1'b1, 1'b1, clk, clr, out[0]);
+jk_ff jkf2(out[0], out[0], clk, clr, out[1]);
+jk_ff jkf3(w1, w1, clk, clr, out[2]);
+jk_ff jkf4(w2, w2, clk, clr, out[3]);
+jk_ff jkf5(w3, w3, clk, clr, out[4]);
+endmodule
+
+module traffic_controller (I, A1, A2, B, C, clk, mode);
+input I, clk;
+output reg A1, A2, B, C;
+output reg [1:0] mode = 1; //initialize at mode1
+wire [4:0] i;
+reg clr = 0;
+counter m(i, clr, clk);
+
+always @(posedge clk) begin
+case (mode)
+    2'b00: begin //mode0
+    A1 = 0; A2 = 0; B = 0; C = 0;
+    if (clr == 1) clr = 0; //if the counter was cleared return counting
+    if (i == 29) begin //checks from 0->29 (0,1,...,29), so delay = 2*30 = #60
+        mode = 1;
+        A1 = 1; A2 = 0; B = 0; C = 1; //next mode info (mode1)
+        clr = 1;
+    end
+    end
+    
+    2'b01: begin //mode1 ------------------------------> start here
+    A1 = 1; A2 = 0; B = 0; C = 1; 
+    if (clr == 1) clr = 0; //if the counter was cleared return counting
+    if (i == 29) begin //checks from 0->29 (0,1,...,29), so delay = 2*30 = #60
+        clr = 1;
+        if (I) begin 
+            mode = 0; //if button is pressed & finished counting
+            A1 = 0; A2 = 0; B = 0; C = 0; //states of next mode (mode0)
+        end
+        else begin 
+            mode = 2;
+            A1 = 1; A2 = 1; B = 0; C = 0; //states of next mode (mode2)
+        end
+    end
+    end
+    
+    2'b10: begin //mode2
+    A1 = 1; A2 = 1; B = 0; C = 0;
+    if (clr == 1) clr = 0; //if the counter was cleared return counting
+    if (i == 9) begin //checks from 0->9 (0,1,...,9), so delay = 2*10 = #20
+        clr = 1;
+        if (I) begin 
+            mode = 0; //if button is pressed & finished counting
+            A1 = 0; A2 = 0; B = 0; C = 0; //states of next mode (mode0)
+        end
+        else begin 
+            mode = 3;
+            A1 = 0; A2 = 0; B = 1; C = 0; //states of next mode (mode3)
+        end
+    end
+    end
+    
+    2'b11: begin //mode3
+    A1 = 0; A2 = 0; B = 1; C = 0;
+    if (clr == 1) clr = 0; //if the counter was cleared return counting
+    if (i == 19) begin //checks from 0->19 (0,1,...,19), so delay = 2*20 = #40
+        clr = 1;
+        if (I) begin 
+            mode = 0; //if button is pressed & finished counting
+            A1 = 0; A2 = 0; B = 0; C = 0; //states of next mode (mode0)
+        end
+        else begin 
+            mode = 1;
+            A1 = 1; A2 = 0; B = 0; C = 1; //states of next mode (mode1)
+        end
+    end
+    end
+endcase
+end
+endmodule
+
+module testbench;
+reg clk = 0, I = 0; //No pedestrians
+wire a1, a2, b, c;
+wire [1:0] mode;
+traffic_controller x(I, a1, a2, b, c, clk, mode);
+always #1 clk = ~clk;
+initial begin //mode1 starts at time 0
+#2 $display("Mode %d: I = %b, A1 = %b, A2 = %b, B = %b, C = %b ", mode, I, a1, a2, b, c);
+#58 $display("Mode %d: I = %b, A1 = %b, A2 = %b, B = %b, C = %b ", mode, I, a1, a2, b, c); //mode2 starts
+#20 $display("Mode %d: I = %b, A1 = %b, A2 = %b, B = %b, C = %b ", mode, I, a1, a2, b, c); //mode3 starts
+#40 $display("Mode %d: I = %b, A1 = %b, A2 = %b, B = %b, C = %b ", mode, I, a1, a2, b, c); //mode1 starts
+#60 $display("Mode %d: I = %b, A1 = %b, A2 = %b, B = %b, C = %b ", mode, I, a1, a2, b, c); //mode2 starts
+#20 $display("Mode %d: I = %b, A1 = %b, A2 = %b, B = %b, C = %b ", mode, I, a1, a2, b, c); //mode3 starts
+#40 $display("Mode %d: I = %b, A1 = %b, A2 = %b, B = %b, C = %b ", mode, I, a1, a2, b, c); //mode1 starts
+#1 $finish;
+end
+endmodule
