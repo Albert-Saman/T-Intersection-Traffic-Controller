@@ -2,7 +2,9 @@
 ## Project Summary
 This project demonstrates the design and simulation of a digital traffic light controller for a complex T-intersection, implemented entirely in Verilog HDL. The design utilizes a Finite State Machine (FSM) with four distinct modes, synchronized by a custom-built structural counter to manage varying traffic durations and prioritize pedestrian safety via a dedicated interrupt. The intersection joins three roads (A, B, C) as well as a pedestrian area, as shown below.
 
+<div align = "center">
 <img width="592" height="367" alt="image" src="https://github.com/user-attachments/assets/5651e41e-9c4a-4982-a06c-08f102aaa38a" />
+</div>
 
 ## ⚙️ Core Design Architecture
 
@@ -16,7 +18,9 @@ When the pedestrian button (I) is pressed, the FSM completes the current mode's 
 
 State Diagram:
 
-<img width="695" height="615" alt="image" src="https://github.com/user-attachments/assets/d632be7a-dbc1-450a-9d7c-4193c1b8806e" />
+<div align = "center">
+<img width="745" height="720" alt="image" src="https://github.com/user-attachments/assets/34d959da-0d64-4dcc-8324-768f720c578c" />
+</div>
 
 ### 2. Structural Counter
 
@@ -24,7 +28,9 @@ The timing requirements (up to 30 seconds) necessitate a custom counter. This co
 
 Counter Schematic:
 
-![counter](https://github.com/user-attachments/assets/3e9d363d-b55f-44ff-82ba-0d419b615115)
+<div align = "center">
+<img width="1156" height="438" alt="image" src="https://github.com/user-attachments/assets/a56482ee-04b1-4a78-a5fb-c1298f52b679" />
+</div>
 
 ## 🚦 Traffic Modes & Timing
 The system operates on a 1 Hz clock. All light signals are simplified (1 for Green/ON, 0 for Red/OFF).
